@@ -1032,6 +1032,17 @@ implementation details see :ref:`using-the-views`.
       :meth:`request.get_host() <django.http.HttpRequest.get_host>`, that are
       safe for redirecting after login. Defaults to an empty :class:`set`.
 
+    * ``success_url_allow_host_wildcards``: A :class:`bool` that determines
+      whether ``success_url_allowed_hosts`` values should allow subdomain
+      wildcards. A value beginning with a period is interpreted as a subdomain
+      wildcard: ``'.example.com'`` will match ``example.com``,
+      ``www.example.com``, and any other subdomain of ``example.com``. Defaults
+      to ``False``.
+
+      .. versionadded:: 3.1
+
+        The ``success_url_allow_host_wildcards`` attribute was added.
+
     Here's what ``LoginView`` does:
 
     * If called via ``GET``, it displays a login form that POSTs to the
@@ -1153,6 +1164,17 @@ implementation details see :ref:`using-the-views`.
     * ``success_url_allowed_hosts``: A :class:`set` of hosts, in addition to
       :meth:`request.get_host() <django.http.HttpRequest.get_host>`, that are
       safe for redirecting after logout. Defaults to an empty :class:`set`.
+
+    * ``success_url_allow_host_wildcards``: A :class:`bool` that determines
+      whether ``success_url_allowed_hosts`` values should allow subdomain
+      wildcards. A value beginning with a period is interpreted as a subdomain
+      wildcard: ``'.example.com'`` will match ``example.com``,
+      ``www.example.com``, and any other subdomain of ``example.com``. Defaults
+      to ``False``.
+
+      .. versionadded:: 3.1
+
+        The ``success_url_allow_host_wildcards`` attribute was added.
 
     **Template context:**
 

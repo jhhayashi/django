@@ -234,6 +234,39 @@ class IsSafeURLTests(SimpleTestCase):
                     False,
                 )
 
+    def test_wildcard_host_good_urls(self):
+        good_urls = (
+            'example.com',
+            'example.com/p',
+            'http://example.com',
+            'http://example.com/p',
+            'https://example.com/p',
+            'HTTPS://example.com/p',
+            '//example.com/p',
+            '/view/?param=http://example.com',
+            'https://foo.example.com/p',
+            'https://bar.example.com/p',
+            'https://foo.bar.example.com/p',
+        )
+        for url in good_urls:
+            with self.subTest(url=url):
+                self.assertIs(
+                    url_has_allowed_host_and_scheme(url, allowed_hosts={'.example.com'}, allow_wildcards=True),
+                    True,
+                )
+
+    def test_wildcard_host_bad_urls(self):
+        bad_urls = (
+            'http://fooexample.com/p',
+            'ftp://example.com/p',
+        )
+        for url in bad_urls:
+            with self.subTest(url=url):
+                self.assertIs(
+                    url_has_allowed_host_and_scheme(url, allowed_hosts={'.example.com'}, allow_wildcards=True),
+                    False,
+                )
+
     def test_is_safe_url_deprecated(self):
         msg = (
             'django.utils.http.is_safe_url() is deprecated in favor of '

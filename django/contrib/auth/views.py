@@ -32,6 +32,7 @@ UserModel = get_user_model()
 
 class SuccessURLAllowedHostsMixin:
     success_url_allowed_hosts = set()
+    success_url_allow_host_wildcards = False
 
     def get_success_url_allowed_hosts(self):
         return {self.request.get_host(), *self.success_url_allowed_hosts}
@@ -76,6 +77,7 @@ class LoginView(SuccessURLAllowedHostsMixin, FormView):
             url=redirect_to,
             allowed_hosts=self.get_success_url_allowed_hosts(),
             require_https=self.request.is_secure(),
+            allow_wildcards=self.success_url_allow_host_wildcards,
         )
         return redirect_to if url_is_safe else ''
 
@@ -144,6 +146,7 @@ class LogoutView(SuccessURLAllowedHostsMixin, TemplateView):
                 url=next_page,
                 allowed_hosts=self.get_success_url_allowed_hosts(),
                 require_https=self.request.is_secure(),
+                allow_wildcards=self.success_url_allow_host_wildcards,
             )
             # Security check -- Ensure the user-originating redirection URL is
             # safe.

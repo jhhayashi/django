@@ -299,7 +299,7 @@ def is_same_domain(host, pattern):
     )
 
 
-def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
+def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False, allow_wildcards=False):
     """
     Return ``True`` if the url uses an allowed host and a safe scheme.
 
@@ -323,8 +323,18 @@ def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
     # Chrome treats \ completely as / in paths but it could be part of some
     # basic auth credentials so we need to check both URLs.
     return (
-        _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=require_https) and
-        _url_has_allowed_host_and_scheme(url.replace('\\', '/'), allowed_hosts, require_https=require_https)
+        _url_has_allowed_host_and_scheme(
+            url,
+            allowed_hosts,
+            require_https=require_https,
+            allow_wildcards=allow_wildcards
+        ) and
+        _url_has_allowed_host_and_scheme(
+            url.replace('\\', '/'),
+            allowed_hosts,
+            require_https=require_https,
+            allow_wildcards=allow_wildcards
+        )
     )
 
 
@@ -386,7 +396,7 @@ def _urlsplit(url, scheme='', allow_fragments=True):
     return _coerce_result(v)
 
 
-def _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
+def _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False, allow_wildcards=False):
     # Chrome considers any URL with more than two slashes to be absolute, but
     # urlparse is not so flexible. Treat any url with three slashes as unsafe.
     if url.startswith('///'):
@@ -407,12 +417,16 @@ def _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
     if unicodedata.category(url[0])[0] == 'C':
         return False
     scheme = url_info.scheme
+    host = url_info.netloc
     # Consider URLs without a scheme (e.g. //example.com/p) to be http.
-    if not url_info.scheme and url_info.netloc:
+    if not url_info.scheme and host:
         scheme = 'http'
     valid_schemes = ['https'] if require_https else ['http', 'https']
-    return ((not url_info.netloc or url_info.netloc in allowed_hosts) and
-            (not scheme or scheme in valid_schemes))
+    if allow_wildcards:
+        is_allowed_host = not host or any(is_same_domain(host, pattern) for pattern in allowed_hosts)
+    else:
+        is_allowed_host = not host or host in allowed_hosts
+    return (is_allowed_host and (not scheme or scheme in valid_schemes))
 
 
 def limited_parse_qsl(qs, keep_blank_values=False, encoding='utf-8',

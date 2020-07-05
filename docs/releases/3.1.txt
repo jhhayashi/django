@@ -142,6 +142,12 @@ Minor features
   algorithm. Support for user sessions that use the old hashing algorithm
   remains until Django 4.0.
 
+* The new :attr:`.views.LoginView.success_url_allow_host_wildcards` attribute
+  allows hosts with subdomain wildcards.
+
+* The new :attr:`.views.LogoutView.success_url_allow_host_wildcards` attribute
+  allows hosts with subdomain wildcards.
+
 :mod:`django.contrib.contenttypes`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
